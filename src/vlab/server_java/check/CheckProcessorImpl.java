@@ -18,12 +18,12 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
     private static int[] getIntArrayFromJSON(JSONArray jsonArray){
         int[] intArray = new int[jsonArray.length()];
         for (int i = 0; i < intArray.length; i++) {
-            intArray[i] = jsonArray.optInt(i);
+            intArray[i] = jsonArray.getInt(i);
         }
         return intArray;
     }
 
-    private static String[] getCheckedResults(int[] solution, int answer, String task, int num) {
+    private static String[] checkTruthTable(int[] solution, int answer, String task, int num) {
         String[] result = new String[2];
         int N = 8;
         int[] trueSequence = new int[N]; trueSequence[answer] = 1;
@@ -54,7 +54,7 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
         return result;
     }
 
-    private static String[] getCheckedResults(int[] solution, int[] answer, String task) {
+    private static String[] checkTruthTable(int[] solution, int[] answer, String task) {
         String[] result = new String[2];
         int N = 8;
         int[] trueSequence = new int[N]; for (int i =0; i < answer.length; i ++) {trueSequence[answer[i]] = 1;}
@@ -85,95 +85,287 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
         return result;
     }
 
+    private static String deleteSpaces(String expression) {
+        String[] parts = expression.split(" ");
+        String result = "";
+        for (int i = 0; i < parts.length; i++) {
+            result += parts[i];
+        }
+        return result;
+    }
+
+    private static String exchangeOperationSigns(String expression) {
+        String result = expression;
+        while (isContainsInStr(result, "+")) {
+            result = replaceInStr(result, "+", "∨");
+        }
+        while (isContainsInStr(result, "*")) {
+            result = replaceInStr(result, "*", "∧");
+        }
+        while (isContainsInStr(result, "(")) {
+            result = replaceInStr(result, "(", "");
+        }
+        while (isContainsInStr(result, ")")) {
+            result = replaceInStr(result, ")", "");
+        }
+        return result;
+    }
+
+    private static boolean isContainsInStr(String str, String elem) {
+        boolean result = true;
+        if (str.indexOf(elem) == -1) {
+            result = false;
+        }
+        return result;
+    }
+
+    private static String replaceInStr(String str, String elem, String elemToPut) {
+        String result;
+        result = str.substring(0, str.indexOf(elem)) + elemToPut + str.substring(str.indexOf(elem) + elem.length(), str.length());
+        return result;
+    }
+
+    private static boolean isTrueDNF(String expression) {
+        boolean result = true;
+        if (expression.length() > 0) {
+            String[] temp = expression.split("∨");
+            for (int i = 0; i < temp.length; i++) {
+                if (isContainsInStr(temp[i], "∨") || !isContainsInStr(temp[i], "∧")) {
+                    throw new NullPointerException("Формула не соответствует виду ДНФ");
+                }
+            }
+            if (!checkAllSimbols(expression)) {
+                throw new NullPointerException("В полученной формуле присутствуют символы, не распознанные как обозначение переменной или знак конъюнкции или дизъюнкции.");
+            }
+        }
+        else
+            throw new NullPointerException("В качестве ответа получена пустая строка.");
+        return true;
+    }
+
+    private static boolean checkAllSimbols(String expression) {
+        char[] temp = expression.toCharArray();
+        for (int i = 0; i < temp.length; i++) {
+            switch (temp[i]) {
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                case 'g':
+                case '∨':
+                case '∧':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private static int[] getTruthTable(String expression, String mode) {
+        int[] result = new int[128];
+        int index = 0;
+        for (int a = 0; a <= 1; a++) {
+            for (int b = 0; b <= 1; b++) {
+                for (int c = 0; c <= 1; c++) {
+                    for (int d = 0; d <= 1; d++) {
+                        for (int e = 0; e <= 1; e++) {
+                            for (int f = 0; f <= 1; f++) {
+                                for (int g = 0; g <= 1; g++) {
+                                    result[index] = getBooleanFunResult(expression, mode, a, b, c, d, e, f, g);
+                                    index++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static int getBooleanFunResult(String expression, String mode, int a, int b, int c, int d, int e, int f, int g) {
+        int result;
+        int resultOfPart;
+        String[] variables;
+        switch (mode) {
+            case "CNF":
+                String[] conjunctions = expression.split("∧");
+                result = 1;
+                for (int i = 0; i < conjunctions.length; i++) {
+                    variables = conjunctions[i].substring(1, conjunctions[i].length() - 1).split("∨");
+                    resultOfPart = 0;
+                    for (int j = 0; j < variables.length; j++) {
+                        switch (variables[j].charAt(0)) {
+                            case 'a':
+                                resultOfPart += a;
+                                break;
+                            case 'b':
+                                resultOfPart += b;
+                                break;
+                            case 'c':
+                                resultOfPart += c;
+                                break;
+                            case 'd':
+                                resultOfPart += d;
+                                break;
+                            case 'e':
+                                resultOfPart += e;
+                                break;
+                            case 'f':
+                                resultOfPart += f;
+                                break;
+                            case 'g':
+                                resultOfPart += g;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unresolved sign at getBooleanFun().\n");
+                        }
+                    }
+                    if (resultOfPart > 1) {
+                        resultOfPart = 1;
+                    }
+                    result *= resultOfPart;
+                }
+                return result;
+            case "DNF":
+                String[] disjunctions = expression.split("∨");
+                result = 0;
+                for (int i = 0; i < disjunctions.length; i++) {
+                    variables = disjunctions[i].split("∧");
+                    resultOfPart = 1;
+                    for (int j = 0; j < variables.length; j++) {
+                        switch (variables[j].charAt(0)) {
+                            case 'a':
+                                resultOfPart *= a;
+                                break;
+                            case 'b':
+                                resultOfPart *= b;
+                                break;
+                            case 'c':
+                                resultOfPart *= c;
+                                break;
+                            case 'd':
+                                resultOfPart *= d;
+                                break;
+                            case 'e':
+                                resultOfPart *= e;
+                                break;
+                            case 'f':
+                                resultOfPart *= f;
+                                break;
+                            case 'g':
+                                resultOfPart *= g;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unresolved sign at getBooleanFun().\n");
+                        }
+                    }
+                    result += resultOfPart;
+                }
+                if (result > 1) {
+                    result = 1;
+                }
+                return result;
+        }
+        throw new IllegalArgumentException("Unresolved mode at getBooleanFun().\n");
+    }
+
     @Override
     public CheckingSingleConditionResult checkSingleCondition(ConditionForChecking condition, String instructions, GeneratingResult generatingResult) throws Exception {
         BigDecimal points;
         String comment = "";
-//        points = new BigDecimal(1.0);
+        double firstTaskPoints, secondTaskPoints;
 
         try{
-            JSONObject variant_json = new JSONObject(generatingResult.getInstructions()); // условие - generate
+            JSONObject variant_json = new JSONObject(generatingResult.getInstructions());
             int[] firstTaskVariant = getIntArrayFromJSON(variant_json.getJSONArray("firstTaskVariant"));
-            //  {"firstTaskVariant":[1,3,5,7],"secondTaskVariant":10}}
 
             JSONObject variantForUser_json = new JSONObject(generatingResult.getCode());
             String variantForUser = variantForUser_json.getString("firstTask");
 
-            JSONObject answers_json = new JSONObject(instructions); // ответ пользователя - из формы
+            JSONObject answers_json = new JSONObject(instructions);
             JSONObject firstTaskAnswer_json = answers_json.getJSONObject("firstTaskAnswer");
             int[] firstSequence = getIntArrayFromJSON(firstTaskAnswer_json.getJSONArray("1"));
             int[] secondSequence = getIntArrayFromJSON(firstTaskAnswer_json.getJSONArray("2"));
             int[] thirdSequence = getIntArrayFromJSON(firstTaskAnswer_json.getJSONArray("3"));
             int[] fourthSequence = getIntArrayFromJSON(firstTaskAnswer_json.getJSONArray("4"));
             int[] resultSequence = getIntArrayFromJSON(firstTaskAnswer_json.getJSONArray("5"));
-            //    {
-                        //    "firstTaskAnswer":{
-                        //    "1":["0","1","0","00","0","0","0","0"],
-                        //    "2":["0","0","1","0","0","0","0","0"],
-                        //    "3":["0","0","0","1","0","0","0","0"],
-                        //    "4":["0","0","0","0","0","0","0","0"],
-                        //    "5":["0","1","1","1","0","0","0","1"]
-                        //    },
-                        //    "secondTaskAnswer":
-                        //    "a*b*c+a*b*d*e+c*d"
-            //    }
 
-            String[] currentCheckedResults = new String[2];
-            double trueAnswersCount = 0.0;
-            currentCheckedResults = getCheckedResults(firstSequence, firstTaskVariant[0], variantForUser, 0);
-            trueAnswersCount += Integer.parseInt(currentCheckedResults[0]);
-            comment += currentCheckedResults[1];
-//            comment += Double.toString(trueAnswersCount) + " ";
+            if (firstSequence.length == 8 && secondSequence.length == 8 && thirdSequence.length == 8 && fourthSequence.length == 8 && resultSequence.length == 8) {
+                String[] currentCheckedResults;
+                double trueAnswersCount = 0.0;
 
-            currentCheckedResults = getCheckedResults(secondSequence, firstTaskVariant[1], variantForUser, 1);
-            trueAnswersCount += Integer.parseInt(currentCheckedResults[0]);
-            comment += currentCheckedResults[1];
-//            comment += Double.toString(trueAnswersCount) + " ";
+                currentCheckedResults = checkTruthTable(firstSequence, firstTaskVariant[0], variantForUser, 0);
+                trueAnswersCount += Integer.parseInt(currentCheckedResults[0]);
+                comment += currentCheckedResults[1];
 
-//            //
-//            comment += Arrays.toString(secondSequence) + '\\' + Integer.toString(firstTaskVariant[1]) + "\\";
-//            comment += "\\" + Integer.toString(trueAnswersCount) + "\\" + currentCheckedResults[1];
-//            //
+                currentCheckedResults = checkTruthTable(secondSequence, firstTaskVariant[1], variantForUser, 1);
+                trueAnswersCount += Integer.parseInt(currentCheckedResults[0]);
+                comment += currentCheckedResults[1];
 
+                currentCheckedResults = checkTruthTable(thirdSequence, firstTaskVariant[2], variantForUser, 2);
+                trueAnswersCount += Double.parseDouble(currentCheckedResults[0]);
+                comment += currentCheckedResults[1];
 
-            currentCheckedResults = getCheckedResults(thirdSequence, firstTaskVariant[2], variantForUser, 2);
-            trueAnswersCount += Double.parseDouble(currentCheckedResults[0]);
-            comment += currentCheckedResults[1];
-//            comment += Double.toString(trueAnswersCount) + " ";
+                currentCheckedResults = checkTruthTable(fourthSequence, firstTaskVariant[3], variantForUser, 3);
+                trueAnswersCount += Double.parseDouble(currentCheckedResults[0]);
+                comment += currentCheckedResults[1];
 
-            currentCheckedResults = getCheckedResults(fourthSequence, firstTaskVariant[3], variantForUser, 3);
-            trueAnswersCount += Double.parseDouble(currentCheckedResults[0]);
-            comment += currentCheckedResults[1];
-//            comment += Double.toString(trueAnswersCount) + " ";
+                currentCheckedResults = checkTruthTable(resultSequence, firstTaskVariant, variantForUser);
+                trueAnswersCount += Double.parseDouble(currentCheckedResults[0]);
+                comment += currentCheckedResults[1];
 
-            currentCheckedResults = getCheckedResults(resultSequence, firstTaskVariant, variantForUser);
-            trueAnswersCount += Double.parseDouble(currentCheckedResults[0]);
-            comment += currentCheckedResults[1];
-//            comment += Double.toString(trueAnswersCount) + " ";
-
-            points = new BigDecimal(Math.round((0.5 * trueAnswersCount / (8 * 5)) * 100.0) / 100.0);
-
-//          Failed, JSONObject["firstTaskAnswer"] is not a JSONObject
-//            int secondTaskVariant = variant_json.getInt("secondTaskVariant");
-//            String secondTaskAnswer = answers_json.getString("secondTaskAnswer");
-
-            if (points.compareTo(new BigDecimal("1.0")) == 0){
-                comment = "Решение верно";
+                firstTaskPoints = 0.5 * trueAnswersCount / (8 * 5);
+            }
+            else {
+                firstTaskPoints = 0.0;
+                comment += "Не полностью или неверно введены значения таблицы истинности.\n";
             }
         }
         catch (JSONException e) {
-            points = new BigDecimal(0.0);
-            comment = "Не полностью введены значения таблицы истинности, не выполнено задание #2";
+            firstTaskPoints = 0.0;
+            comment += "Не полностью или неверно введены значения таблицы истинности.\n";
         }
         catch (Exception e) {
-            points = new BigDecimal(1.0);
-            comment = "Failed, " + e.getMessage();
+            return new CheckingSingleConditionResult(new BigDecimal(1.0), "Failed, " + e.getMessage());
         }
 
+        try {
+            JSONObject variant_json = new JSONObject(generatingResult.getInstructions());
+            String secondTaskVariant = variant_json.getString("secondTaskVariant");
 
+            JSONObject answers_json = new JSONObject(instructions);
+            String secondTaskAnswer = answers_json.getString("secondTaskAnswer");
 
+            secondTaskVariant = deleteSpaces(secondTaskVariant);
+            secondTaskAnswer = exchangeOperationSigns(deleteSpaces(secondTaskAnswer));
 
+            if (isTrueDNF(secondTaskAnswer)) {
+                int[] CNFtruthTable = getTruthTable(secondTaskVariant, "CNF");
+                int[] DNFtruthTable = getTruthTable(secondTaskAnswer, "DNF");
+                for (int i = 0; i < 128; i++) {
+                    if (CNFtruthTable[i] != DNFtruthTable[i]) {
+                        throw new NullPointerException("В полученной формуле сокращённой ДНФ допущена ошибка.");
+                    }
+                }
+            }
+            secondTaskPoints = 0.5;
+        }
+        catch (NullPointerException e) {
+            secondTaskPoints = 0.0;
+            comment += e.getMessage();
+        }
+        catch (Exception e) {
+            return new CheckingSingleConditionResult(new BigDecimal(1.0), "Failed, " + e.getMessage());
+        }
 
+        points = new BigDecimal(Math.round((firstTaskPoints + secondTaskPoints) * 100.0) / 100.0);
+        if (points.compareTo(new BigDecimal("1.0")) == 0){
+            comment = "Решение верно";
+        }
 
         return new CheckingSingleConditionResult(points, comment);
     }

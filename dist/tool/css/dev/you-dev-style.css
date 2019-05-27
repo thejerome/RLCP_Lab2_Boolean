@@ -1,3 +1,234 @@
+#table input:focus {
+    outline: none;
+}
+
+#jsLab {
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+    border: 1px solid grey;
+    border-radius: 3px;
+    min-height: 580px;
+    max-height: 580px;
+}
+
+h1 {
+    font-size: 20px;
+}
+
+h2 {
+    font-size: 16px;
+}
+
+h3 {
+    font-size: 14px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid grey;
+    padding: 10px 10px 7px;
+}
+
+.header h1 {
+    margin-left: 35%;
+}
+
+.header button {
+    background-image: -webkit-linear-gradient(top,#5bc0de 0,#2aabd2 100%);
+    background-image: -o-linear-gradient(top,#5bc0de 0,#2aabd2 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#5bc0de),to(#2aabd2));
+    background-image: linear-gradient(to bottom,#5bc0de 0,#2aabd2 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2aabd2', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+    border-color: #28a4c9;
+}
+
+div[class^=lab-initial] {
+    padding: 7px 10px 7px;
+    border-bottom: 1px solid grey;
+}
+
+div[class^=lab-initial] p {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+div[class^=lab-task] {
+    padding: 7px 10px 7px;
+}
+
+div[class^=lab-task] textarea {
+    resize: none;
+    width: 100%;
+    min-height: 50px;
+    display: block;
+}
+
+div[class=info] {
+    padding: 7px 10px 7px;
+}
+
+.notation {
+    display: block;
+    margin-bottom: 10px;
+    padding: 3px 10px 3px;
+    width: 100%;
+}
+
+#table {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+#table td {
+    padding: 5px;
+    margin: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#table thead td:nth-child(4),
+#table thead td:nth-child(5),
+#table thead td:nth-child(6),
+#table thead td:nth-child(7) {
+    width: 110px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#table thead td:last-child {
+    width: 100px;
+}
+
+#table td > input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    /*margin-left: 5px;*/
+    /*border: 1px solid rgba(0,0,0,0);*/
+}
+
+#blocksChanger {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    /*width: 70px;*/
+    /*margin: 0 10px 10px;*/
+    margin-left: auto;
+    background-image: -webkit-linear-gradient(top,#fff 0,#e0e0e0 100%);
+    background-image: -o-linear-gradient(top,#fff 0,#e0e0e0 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#e0e0e0));
+    background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe0e0e0', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+    border-color: #dbdbdb;
+    border-color: #ccc;
+    /*padding: 0;*/
+}
+
+/*ol > li {*/
+/*    margin-left: 15px;*/
+/*}*/
+
+/*div[class^=lab] {*/
+/*    padding: 5px 10px;*/
+/*    margin: 5px 0;*/
+/*    !*position: relative;*!*/
+/*    !*z-index: 1;*!*/
+/*}*/
+
+/*.lab-user-answers input[id^=answer] {*/
+/*    color: #000;*/
+/*    background-color: #fff;*/
+/*    border: none;*/
+/*    margin-left: 5px;*/
+/*}*/
+
+/*.lab-user-answers input.btn-primary {*/
+/*    font-size: 14px;*/
+/*    border: none;*/
+/*    margin-left: 30px;*/
+/*    letter-spacing: 1.5px;*/
+/*    background: grey;*/
+/*    padding: 6px 10px;*/
+/*}*/
+
+/*ul {*/
+/*    list-style-type: none;*/
+/*}*/
+
+/*#modal {*/
+/*    border: 1px solid rgba(0, 0, 0, 0.5);*/
+/*    display: inline-flex;*/
+/*    border-radius: 3px;*/
+/*    padding: 2px;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*    position: absolute;*/
+/*    right: 90px;*/
+/*    bottom: 20px;*/
+/*    z-index: 10;*/
+/*}*/
+
+/*#modal label {*/
+/*    margin: 2px;*/
+/*}*/
+
+/*#modal input.btn-success {*/
+/*    font-size: 12px;*/
+/*    border: none;*/
+/*    width: 50px !important;*/
+/*    font-weight: bold;*/
+/*    text-align: center;*/
+/*}*/
+
+/*#modalInfo {*/
+/*    padding: 5px 5px;*/
+/*    text-align: center;*/
+/*    width: 65%;*/
+/*    border: 1px solid #000;*/
+/*    top: 58px;*/
+/*    position: absolute;*/
+/*    right: 10px;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*#modalInfo p {*/
+/*    margin-bottom: 5px;*/
+/*}*/
+
+/*h3 {*/
+/*    font-size: 16px;*/
+/*}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*#jsLab {*/
 /*    width: 400px;*/
 /*    !*border: 2px solid #000;*!*/

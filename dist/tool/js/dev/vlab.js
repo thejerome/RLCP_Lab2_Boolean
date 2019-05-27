@@ -5,8 +5,14 @@ function init_lab() {
     };
 
     let answers = {
-        firstTaskAnswer: [],
-        secondTaskAnswer: []
+        firstTaskAnswer: {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        },
+        secondTaskAnswer: ""
     };
 
     function get_variant() {
@@ -46,25 +52,28 @@ function init_lab() {
 
     return {
         setVariant : function(str){},
-        setPreviosSolution: function(str){},
+        setPreviosSolution: function(str){
+            return answers;
+        },
         setMode: function(str){},
 
         init: function () {
             let variant = get_variant();
 
-            // console.log($("#previousSolution").val());
+            console.log($("#previousSolution").val());
             let content = '' +
                 '<div class = "header">' +
                     '<h1>Булева алгебра</h1>' +
-                    // '<button type="button" class="btn btn-info" id = "infoModalOpener">Справка</button>' +
+                    '<button type="button" class="btn btn-info" id = "infoModalOpener">Справка</button>' +
                 '</div>' +
                 '<div class = "lab-initial-first">' +
-                    '<h2>Исходные данные</h2>' +
+                    '<h2>Исходная булева функция</h2>' +
                     '<p>ƒ(a, b, c) = ' + variant.firstTask + '</p>' +
                 '</div>' +
+
                 '<div class = "lab-task-first">' +
                     '<h2>Таблица истинности</h2>' +
-                    '<table style = "border: 1px solid #000;" id = "table">' +
+                    '<table class = "table table-bordered" id = "table">' +
                         '<thead>' +
                             '<td>a</td>' +
                             '<td>b</td>' +
@@ -157,59 +166,119 @@ function init_lab() {
                         '</tr>' +
                     '</table>' +
                 '</div>' +
-                '<input type = "button" id = "openSecondTask" value = "Далее">';
+
+                '<div class = "lab-initial-second">' +
+                    '<h2>Исходная булева функция в КНФ</h2>' +
+                    '<p>ƒ(a, b, c, e, f, g) = ' + variant.secondTask + '</p>' +
+                '</div>' +
+                '<div class = "lab-task-second">' +
+                    '<h2>Ответ - булева функция в сокращённой ДНФ</h2>' +
+                    '<span class = "alert alert-info notation"><h3 class = "alert-heading">Примечание</h3>Для ввода результирующей формулы можно воспользоваться символами <b>*</b> и <b>+</b> для обозначения операций конъюнкции и дизъюнкции соответственно.</span>' +
+                    '<textarea placeholder="a * b + c" id = "secondTask"></textarea>' +
+                '</div>' +
+
+                '<div class = "info">' +
+                    '<h2>Виртуальная лаборатория "Булева алгебра"</h2>' +
+                    '<p>В первом задании виртуальной лаборатории необходимо заполнить таблицу истинности для заданной булевой функции. Для этого прежде нужно указать значения таблицы для промежуточных выражений, входящих в результирующую функцию. Булевы значения необходимо ввести в текстовые поля соответствующих столбцов таблицы.</p>' +
+                    '<p>Во втором задании необходимо привести булеву функцию к сокращённой дизъюнктивной нормальной форме, пользуясь правилами булевой алгебры. Полученное выражение необходимо ввести в текстовое поле.</p>' +
+                '</div>' +
+
+                '<input class = "btn btn-light" type = "button" id = "blocksChanger" value = "Далее">';
             let container = $("#jsLab")[0];
             container.innerHTML = content;
+            $(".lab-initial-second")[0].style.display = "none";
+            $(".lab-task-second")[0].style.display = "none";
+            $(".info")[0].style.display = "none";
 
-            for (let i = 0; i < $("#table input").length; i++) {
-                // $("#table input")[i].value = i;
-                $("#table input")[i].style.border = "2px solid grey"
-            }
-
-            let firstTaskAnswer = {};
-            $("#openSecondTask")[0].addEventListener("click", function() {
-                let flag = true;
-                for (let i = 0; i < $("#table input").length; i++) {
-                    if ($("#table input")[i].value == "" || ($("#table input")[i].value != 0 && $("#table input")[i].value != 1)) {
-                        $("#table input")[i].style.border = "2px solid red";
-                        flag = false;
-                    }
-                    else {
-                        $("#table input")[i].style.border = "2px solid grey";
-                    }
-                }
-                if (flag) {
-                    let temp_root = $("#table")[0].getElementsByTagName("tr");
-                    let temp;
-                    for (let i = 3; i <= 7 ; i++) {
-                        temp = [];
-                        for (let j = 1; j < temp_root.length; j++) {
-                            temp.push(+ temp_root[j].getElementsByTagName("td")[i].getElementsByTagName("input")[0].value);
+            let tableTRs = $("#table")[0].getElementsByTagName("tr");
+            let currElem;
+            for (let i = 3; i <= 7 ; i++) {
+                for (let j = 1; j < tableTRs.length; j++) {
+                    currElem = tableTRs[j].getElementsByTagName("td")[i].getElementsByTagName("input")[0];
+                    // answers.firstTaskAnswer["" + (i - 2)][j - 1] = currElem.value;
+                    currElem.style.border = "1px solid rgba(0,0,0,0)";
+                    currElem.style.padding = "2px";
+                    currElem.style.marginLeft = "5px";
+                    currElem.addEventListener("input", function() {
+                        let flag = true;
+                        if (this.value != 0 && this.value != 1) {
+                            this.style.border = "2px solid red";
+                            this.style.padding = "1px";
+                            this.style.marginLeft = "0px";
+                            flag = false;
                         }
-                        firstTaskAnswer["" + (i - 2)]= temp;
-                    }
-                    answers.firstTaskAnswer = firstTaskAnswer;
-                    // console.log(answers);
-                    // container.innerHTML = '' +
-                    //     '<div class = "header">' +
-                    //         '<h1>Булева алгебра</h1>' +
-                    //     '</div>' +
-                    //     '<div class = "lab-initial-second">' +
-                    //         '<h2>Исходные данные</h2>' +
-                    //         '<p>ƒ(a, b, c, e, f) = ' + variant.secondTask + '</p>' +
-                    //     '</div>' +
-                    //     '<div class = "lab-task-second">' +
-                    //         '<h2>Ответ</h2>' +
-                    //         '<span>Примечение: в ответе можно заменить символ конъюнкции на "*", а символ дизъюнкции на "+".</span><br>' +
-                    //         '<textarea placeholder="x * z + y * z" style = "resize: none; width: 400px; min-height: 50px;" id = "secondTask"></textarea>' +
-                    //     '</div>';
-                    // $("#secondTask")[0].addEventListener("input", function() {
-                    //     answers.secondTaskAnswer = $("#secondTask").val();
-                    // })
+                        else {
+                            this.style.border = "1px solid rgba(0,0,0,0)";
+                            this.style.padding = "2px";
+                            this.style.marginLeft = "5px";
+                        }
+                        if (flag) {
+                            answers.firstTaskAnswer["" + (i - 2)][j - 1] = + this.value;
+                        }
+                    });
+                    currElem.addEventListener("blur", function() {
+                        if (this.value == "") {
+                            this.style.border = "2px solid red";
+                            this.style.padding = "1px";
+                            this.style.marginLeft = "0px";
+                        }
+                    });
                 }
+            }
+            $("#secondTask")[0].addEventListener("input", function() {
+                answers.secondTaskAnswer = $("#secondTask").val();
             });
 
+            let currentBlocksChangerState = "Далее";
+            $("#blocksChanger")[0].addEventListener("click", function() {
+                switch (this.value) {
+                    case "Далее":
+                        $(".lab-initial-first")[0].style.display = "none";
+                        $(".lab-initial-second")[0].style.display = "block";
+                        $(".lab-task-first")[0].style.display = "none";
+                        $(".lab-task-second")[0].style.display = "block";
+                        this.value = "Назад";
+                        currentBlocksChangerState = "Назад";
+                        break;
+                    case "Назад":
+                        $(".lab-initial-second")[0].style.display = "none";
+                        $(".lab-initial-first")[0].style.display = "block";
+                        $(".lab-task-second")[0].style.display = "none";
+                        $(".lab-task-first")[0].style.display = "block";
+                        this.value = "Далее";
+                        currentBlocksChangerState = "Далее";
+                        break;
+                    case "Закрыть":
+                        $(".info")[0].style.display = "none";
+                        switch (currentBlocksChangerState) {
+                            case "Далее":
+                                $(".lab-initial-second")[0].style.display = "none";
+                                $(".lab-initial-first")[0].style.display = "block";
+                                $(".lab-task-second")[0].style.display = "none";
+                                $(".lab-task-first")[0].style.display = "block";
+                                this.value = "Далее";
+                                break;
+                            case "Назад":
+                                $(".lab-initial-first")[0].style.display = "none";
+                                $(".lab-initial-second")[0].style.display = "block";
+                                $(".lab-task-first")[0].style.display = "none";
+                                $(".lab-task-second")[0].style.display = "block";
+                                this.value = "Назад";
+                                break;
+                        }
+                        break;
+                }
 
+
+            });
+            $("#infoModalOpener")[0].addEventListener("click", function () {
+                $(".info")[0].style.display = "block";
+                $("#blocksChanger")[0].value = "Закрыть";
+                $(".lab-initial-first")[0].style.display = "none";
+                $(".lab-initial-second")[0].style.display = "none";
+                $(".lab-task-first")[0].style.display = "none";
+                $(".lab-task-second")[0].style.display = "none";
+            });
 
         },
         calculateHandler: function (text, code) {},

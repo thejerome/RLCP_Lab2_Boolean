@@ -15,26 +15,17 @@ function init_lab() {
         secondTaskAnswer: ""
     };
 
-    function get_variant() {
-        let variant;
-        if ($("#preGeneratedCode").val()) {
-            variant = parse_variant($("#preGeneratedCode").val(), byDefault);
-        }
-        else {
-            variant = byDefault;
-        }
-        return variant;
-    }
-
-    function parse_variant(str, def_obj) {
+    function parseVariant(str, def_obj) {
         let parse_str;
         if (typeof str === 'string' && str !== "") {
             try {
                 parse_str = JSON.parse(str);
-            } catch (e) {
+            }
+            catch (e) {
                 if (def_obj){
                     parse_str = def_obj;
-                } else {
+                }
+                else {
                     parse_str = false;
                 }
             }
@@ -51,18 +42,49 @@ function init_lab() {
     }
 
     return {
-        setVariant : function(str){},
-        setPreviosSolution: function(str){},
+        setVariant : function(str){
+            let variant;
+            if (str !== undefined) {
+                variant = parseVariant(str, byDefault);
+            }
+            else {
+                variant = byDefault;
+            }
+            return variant;
+        },
+        setPreviousSolution: function(str){
+            let previousSolution;
+            if (str !== undefined) {
+                try {
+                    previousSolution = JSON.parse(str);
+                }
+                catch (e) {}
+            }
+            return previousSolution;
+        },
         setMode: function(str){},
 
         init: function () {
-            let variant = get_variant();
-
-            // console.log($("#previousSolution").val());
+            let variant = this.setVariant($("#preGeneratedCode").val());
+            let previousSolution = this.setPreviousSolution($("#previousSolution").val());
+            if (previousSolution !== undefined) {
+                answers.firstTaskAnswer = previousSolution.firstTaskAnswer;
+                answers.secondTaskAnswer = previousSolution.secondTaskAnswer;
+            }
+            else {
+                answers.firstTaskAnswer = {
+                    "1": [],
+                    "2": [],
+                    "3": [],
+                    "4": [],
+                    "5": []
+                };
+                answers.secondTaskAnswer = "";
+            }
             let content = '' +
                 '<div class = "header">' +
                     '<h1>Булева алгебра</h1>' +
-                    '<button type="button" class="btn btn-info" id = "infoModalOpener">Справка</button>' +
+                    '<input type="button" class="btn btn-info" id = "infoModalOpener" value = "Справка">' +
                 '</div>' +
                 '<div class = "lab-initial-first">' +
                     '<h2>Исходная булева функция</h2>' +
@@ -171,32 +193,31 @@ function init_lab() {
                 '</div>' +
                 '<div class = "lab-task-second">' +
                     '<h2>Ответ - булева функция в сокращённой ДНФ</h2>' +
-                    '<span class = "alert alert-info notation"><h3 class = "alert-heading">Примечание</h3>Для ввода результирующей формулы можно воспользоваться символами <b>*</b> и <b>+</b> для обозначения операций конъюнкции и дизъюнкции соответственно.</span>' +
-                    '<textarea placeholder="a * b + c" id = "secondTask"></textarea>' +
+                    '<span class = "alert alert-info notation">Для ввода результирующей формулы можно воспользоваться символами <b>*</b> и <b>+</b> для обозначения операций конъюнкции и дизъюнкции соответственно.</span>' +
+                    '<textarea placeholder="a ∧ b ∨ c" id = "secondTask">' + answers.secondTaskAnswer + '</textarea>' +
                 '</div>' +
 
                 '<div class = "info">' +
                     '<h2>Виртуальная лаборатория "Булева алгебра"</h2>' +
                     '<p>В первом задании виртуальной лаборатории необходимо заполнить таблицу истинности для заданной булевой функции. Для этого прежде нужно указать значения таблицы для промежуточных выражений, входящих в результирующую функцию. Булевы значения необходимо ввести в текстовые поля соответствующих столбцов таблицы.</p>' +
-                    '<p>Во втором задании необходимо привести булеву функцию к сокращённой дизъюнктивной нормальной форме, пользуясь правилами булевой алгебры. Полученное выражение необходимо ввести в текстовое поле.</p>' +
+                    '<p>Во втором задании необходимо привести булеву функцию к сокращённой дизъюнктивной нормальной форме, пользуясь правилами булевой алгебры. Полученное выражение необходимо ввести в текстовое поле. <br> <i>Для ввода результирующей формулы можно воспользоваться символами <b>*</b> и <b>+</b> для обозначения операций конъюнкции и дизъюнкции соответственно.</i></p>' +
                 '</div>' +
 
                 '<input class = "btn btn-light" type = "button" id = "blocksChanger" value = "Далее">';
-            let container = $("#jsLab")[0];
-            container.innerHTML = content;
-            $(".lab-initial-second")[0].style.display = "none";
-            $(".lab-task-second")[0].style.display = "none";
-            $(".info")[0].style.display = "none";
+            $("#jsLab").html(content);
+            $(".lab-initial-second").css("display", "none");
+            $(".lab-task-second").css("display", "none");
+            $(".info").css("display", "none");
 
-            let tableTRs = $("#table")[0].getElementsByTagName("tr");
+            let tableTRs = $("#table").find("tr");
             let currElem;
             for (let i = 3; i <= 7 ; i++) {
                 for (let j = 1; j < tableTRs.length; j++) {
                     currElem = tableTRs[j].getElementsByTagName("td")[i].getElementsByTagName("input")[0];
-                    // answers.firstTaskAnswer["" + (i - 2)][j - 1] = currElem.value;
                     currElem.style.border = "1px solid rgba(0,0,0,0)";
                     currElem.style.padding = "2px";
                     currElem.style.marginLeft = "5px";
+                    currElem.value = answers.firstTaskAnswer["" + (i - 2)][j - 1];
                     currElem.addEventListener("input", function() {
                         let flag = true;
                         if (this.value != 0 && this.value != 1) {
@@ -223,59 +244,64 @@ function init_lab() {
                     });
                 }
             }
-            $("#secondTask")[0].addEventListener("input", function() {
+            
+            $("#secondTask").on("input", function() {
                 answers.secondTaskAnswer = $("#secondTask").val();
             });
 
             let currentBlocksChangerState = "Далее";
-            $("#blocksChanger")[0].addEventListener("click", function() {
+            $("#blocksChanger").on("click", function() {
                 switch (this.value) {
                     case "Далее":
-                        $(".lab-initial-first")[0].style.display = "none";
-                        $(".lab-initial-second")[0].style.display = "block";
-                        $(".lab-task-first")[0].style.display = "none";
-                        $(".lab-task-second")[0].style.display = "block";
+                        $(".lab-initial-first").css("display", "none");
+                        $(".lab-initial-second").css("display", "block");
+                        $(".lab-task-first").css("display", "none");
+                        $(".lab-task-second").css("display", "block");
                         this.value = "Назад";
                         currentBlocksChangerState = "Назад";
                         break;
                     case "Назад":
-                        $(".lab-initial-second")[0].style.display = "none";
-                        $(".lab-initial-first")[0].style.display = "block";
-                        $(".lab-task-second")[0].style.display = "none";
-                        $(".lab-task-first")[0].style.display = "block";
+                        $(".lab-initial-second").css("display", "none");
+                        $(".lab-initial-first").css("display", "block");
+                        $(".lab-task-second").css("display", "none");
+                        $(".lab-task-first").css("display", "block");
                         this.value = "Далее";
                         currentBlocksChangerState = "Далее";
                         break;
-                    case "Закрыть":
-                        $(".info")[0].style.display = "none";
-                        switch (currentBlocksChangerState) {
-                            case "Далее":
-                                $(".lab-initial-second")[0].style.display = "none";
-                                $(".lab-initial-first")[0].style.display = "block";
-                                $(".lab-task-second")[0].style.display = "none";
-                                $(".lab-task-first")[0].style.display = "block";
-                                this.value = "Далее";
-                                break;
-                            case "Назад":
-                                $(".lab-initial-first")[0].style.display = "none";
-                                $(".lab-initial-second")[0].style.display = "block";
-                                $(".lab-task-first")[0].style.display = "none";
-                                $(".lab-task-second")[0].style.display = "block";
-                                this.value = "Назад";
-                                break;
-                        }
-                        break;
                 }
-
-
             });
-            $("#infoModalOpener")[0].addEventListener("click", function () {
-                $(".info")[0].style.display = "block";
-                $("#blocksChanger")[0].value = "Закрыть";
-                $(".lab-initial-first")[0].style.display = "none";
-                $(".lab-initial-second")[0].style.display = "none";
-                $(".lab-task-first")[0].style.display = "none";
-                $(".lab-task-second")[0].style.display = "none";
+
+            $("#infoModalOpener").on("click", function () {
+                if ($(".info").css("display").toLowerCase() == "none") {
+                    $(".info").css("display", "block");
+                    this.value = "Закрыть";
+                    $("#blocksChanger").css("display", "none");
+                    $(".lab-initial-first").css("display", "none");
+                    $(".lab-initial-second").css("display", "none");
+                    $(".lab-task-first").css("display", "none");
+                    $(".lab-task-second").css("display", "none");
+                }
+                else {
+                    $(".info").css("display", "none");
+                    $("#blocksChanger").css("display", "block");
+                    this.value = "Справка";
+                    switch (currentBlocksChangerState) {
+                        case "Далее":
+                            $(".lab-initial-second").css("display", "none");
+                            $(".lab-initial-first").css("display", "block");
+                            $(".lab-task-second").css("display", "none");
+                            $(".lab-task-first").css("display", "block");
+                            $("#blocksChanger").val("Далее");
+                            break;
+                        case "Назад":
+                            $(".lab-initial-first").css("display", "none");
+                            $(".lab-initial-second").css("display", "block");
+                            $(".lab-task-first").css("display", "none");
+                            $(".lab-task-second").css("display", "block");
+                            $("#blocksChanger").val("Назад");
+                            break;
+                    }
+                }
             });
 
         },

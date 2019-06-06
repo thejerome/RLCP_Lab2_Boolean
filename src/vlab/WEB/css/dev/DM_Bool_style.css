@@ -1,0 +1,124 @@
+#table input:focus {
+    outline: none;
+}
+
+#jsLab {
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid grey;
+    border-radius: 3px;
+    min-height: 580px;
+    max-height: 580px;
+}
+
+h1 {
+    font-size: 20px;
+}
+
+h2 {
+    font-size: 16px;
+}
+
+h3 {
+    font-size: 14px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid grey;
+    padding: 10px 10px 7px;
+}
+
+.header input[type=button] {
+    background-image: -webkit-linear-gradient(top,#5bc0de 0,#2aabd2 100%);
+    background-image: -o-linear-gradient(top,#5bc0de 0,#2aabd2 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#5bc0de),to(#2aabd2));
+    background-image: linear-gradient(to bottom,#5bc0de 0,#2aabd2 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2aabd2', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+    border-color: #28a4c9;
+}
+
+div[class^=lab-initial] {
+    padding: 7px 10px 7px;
+    border-bottom: 1px solid grey;
+}
+
+div[class^=lab-initial] p {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+div[class^=lab-task] {
+    padding: 7px 10px 7px;
+}
+
+div[class^=lab-task] textarea {
+    resize: none;
+    width: 100%;
+    min-height: 50px;
+    display: block;
+}
+
+div[class=info] {
+    padding: 7px 10px 7px;
+}
+
+.notation {
+    display: block;
+    margin-bottom: 10px;
+    padding: 3px 10px 3px;
+    width: 100%;
+}
+
+#table {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+#table td {
+    padding: 5px;
+    margin: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#table thead td:nth-child(4),
+#table thead td:nth-child(5),
+#table thead td:nth-child(6),
+#table thead td:nth-child(7) {
+    width: 110px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#table thead td:last-child {
+    width: 100px;
+}
+
+#table td > input {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#blocksChanger {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    margin-left: auto;
+    background-image: -webkit-linear-gradient(top,#fff 0,#e0e0e0 100%);
+    background-image: -o-linear-gradient(top,#fff 0,#e0e0e0 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#e0e0e0));
+    background-image: linear-gradient(to bottom,#fff 0,#e0e0e0 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe0e0e0', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+    border-color: #dbdbdb;
+    border-color: #ccc;
+}

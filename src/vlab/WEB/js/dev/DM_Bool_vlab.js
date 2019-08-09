@@ -19,7 +19,7 @@ function init_lab() {
         let parse_str;
         if (typeof str === 'string' && str !== "") {
             try {
-                parse_str = JSON.parse(str);
+                parse_str = JSON.parse(str.replace(/\*/g, "∧").replace(/\+/g, "∨").replace(/!/g, "¬"));
             }
             catch (e) {
                 if (def_obj){
@@ -193,8 +193,8 @@ function init_lab() {
                 '</div>' +
                 '<div class = "lab-task-second">' +
                     '<h2>Ответ - булева функция в сокращённой ДНФ</h2>' +
-                    '<span class = "alert alert-info notation">Для ввода результирующей формулы можно воспользоваться символами <b>*</b> и <b>+</b> для обозначения операций конъюнкции и дизъюнкции соответственно.</span>' +
-                    '<textarea placeholder="a ∧ b ∨ c" id = "secondTask">' + answers.secondTaskAnswer + '</textarea>' +
+                    '<span class = "alert alert-info notation">Для ввода результирующей формулы используйте символы <b>*</b> и <b>+</b> для обозначения операций конъюнкции и дизъюнкции соответственно.</span>' +
+                    '<textarea placeholder="a * b + c" id = "secondTask">' + answers.secondTaskAnswer + '</textarea>' +
                 '</div>' +
 
                 '<div class = "info">' +
@@ -307,7 +307,7 @@ function init_lab() {
         },
         calculateHandler: function (text, code) {},
         getResults: function () {
-            return answers;
+            return JSON.stringify(answers);
         },
         getCondition: function () {}
     };

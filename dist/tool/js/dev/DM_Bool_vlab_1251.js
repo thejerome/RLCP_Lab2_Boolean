@@ -19,7 +19,7 @@ function init_lab() {
         let parse_str;
         if (typeof str === 'string' && str !== "") {
             try {
-                parse_str = JSON.parse(str);
+                parse_str = JSON.parse(str.replace(/\*/g, "\u2227").replace(/\+/g, "\u2228").replace(/!/g, "\xac"));
             }
             catch (e) {
                 if (def_obj){
@@ -193,8 +193,8 @@ function init_lab() {
                 '</div>' +
                 '<div class = "lab-task-second">' +
                     '<h2>\u041e\u0442\u0432\u0435\u0442 - \u0431\u0443\u043b\u0435\u0432\u0430 \u0444\u0443\u043d\u043a\u0446\u0438\u044f \u0432 \u0441\u043e\u043a\u0440\u0430\u0449\u0451\u043d\u043d\u043e\u0439 \u0414\u041d\u0424</h2>' +
-                    '<span class = "alert alert-info notation">\u0414\u043b\u044f \u0432\u0432\u043e\u0434\u0430 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0438\u0440\u0443\u044e\u0449\u0435\u0439 \u0444\u043e\u0440\u043c\u0443\u043b\u044b \u043c\u043e\u0436\u043d\u043e \u0432\u043e\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c\u0441\u044f \u0441\u0438\u043c\u0432\u043e\u043b\u0430\u043c\u0438 <b>*</b> \u0438 <b>+</b> \u0434\u043b\u044f \u043e\u0431\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u043e\u043f\u0435\u0440\u0430\u0446\u0438\u0439 \u043a\u043e\u043d\u044a\u044e\u043d\u043a\u0446\u0438\u0438 \u0438 \u0434\u0438\u0437\u044a\u044e\u043d\u043a\u0446\u0438\u0438 \u0441\u043e\u043e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0435\u043d\u043d\u043e.</span>' +
-                    '<textarea placeholder="a \u2227 b \u2228 c" id = "secondTask">' + answers.secondTaskAnswer + '</textarea>' +
+                    '<span class = "alert alert-info notation">\u0414\u043b\u044f \u0432\u0432\u043e\u0434\u0430 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0438\u0440\u0443\u044e\u0449\u0435\u0439 \u0444\u043e\u0440\u043c\u0443\u043b\u044b \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439\u0442\u0435 \u0441\u0438\u043c\u0432\u043e\u043b\u044b <b>*</b> \u0438 <b>+</b> \u0434\u043b\u044f \u043e\u0431\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u043e\u043f\u0435\u0440\u0430\u0446\u0438\u0439 \u043a\u043e\u043d\u044a\u044e\u043d\u043a\u0446\u0438\u0438 \u0438 \u0434\u0438\u0437\u044a\u044e\u043d\u043a\u0446\u0438\u0438 \u0441\u043e\u043e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0435\u043d\u043d\u043e.</span>' +
+                    '<textarea placeholder="a * b + c" id = "secondTask">' + answers.secondTaskAnswer + '</textarea>' +
                 '</div>' +
 
                 '<div class = "info">' +
@@ -307,7 +307,7 @@ function init_lab() {
         },
         calculateHandler: function (text, code) {},
         getResults: function () {
-            return answers;
+            return JSON.stringify(answers);
         },
         getCondition: function () {}
     };

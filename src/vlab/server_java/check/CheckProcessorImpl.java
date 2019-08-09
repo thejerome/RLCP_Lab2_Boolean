@@ -49,7 +49,7 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
             else {
                 endOfWord = "и";
             }
-            result[1] += "Ошибка в расчётах ƒ = " + task.split(" ∨ ")[num].substring(1, task.split(" ∨ ")[num].indexOf(")")) + " при значени" + endOfWord + " " + comment.substring(0, comment.length() - 2) + ".\n";
+            result[1] += "Ошибка в расчётах ƒ = " + task.split(" \\+ ")[num].substring(1, task.split(" \\+ ")[num].indexOf(")")) + " при значени" + endOfWord + " " + comment.substring(0, comment.length() - 2) + ".\n";
         }
         return result;
     }
@@ -96,11 +96,11 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
 
     private static String exchangeOperationSigns(String expression) {
         String result = expression;
-        while (isContainsInStr(result, "+")) {
-            result = replaceInStr(result, "+", "∨");
+        while (isContainsInStr(result, "∨")) {
+            result = replaceInStr(result, "∨", "+");
         }
-        while (isContainsInStr(result, "*")) {
-            result = replaceInStr(result, "*", "∧");
+        while (isContainsInStr(result, "∧")) {
+            result = replaceInStr(result, "∧", "*");
         }
         while (isContainsInStr(result, "(")) {
             result = replaceInStr(result, "(", "");
@@ -128,9 +128,9 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
     private static boolean isTrueDNF(String expression) {
         boolean result = true;
         if (expression.length() > 0) {
-            String[] temp = expression.split("∨");
+            String[] temp = expression.split("\\+");
             for (int i = 0; i < temp.length; i++) {
-                if (isContainsInStr(temp[i], "∨") || !isContainsInStr(temp[i], "∧")) {
+                if (isContainsInStr(temp[i], "+") || !isContainsInStr(temp[i], "*")) {
                     throw new NullPointerException("Формула не соответствует виду ДНФ");
                 }
             }
@@ -154,8 +154,8 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
                 case 'e':
                 case 'f':
                 case 'g':
-                case '∨':
-                case '∧':
+                case '+':
+                case '*':
                     break;
                 default:
                     return false;
@@ -192,10 +192,10 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
         String[] variables;
         switch (mode) {
             case "CNF":
-                String[] conjunctions = expression.split("∧");
+                String[] conjunctions = expression.split("\\*");
                 result = 1;
                 for (int i = 0; i < conjunctions.length; i++) {
-                    variables = conjunctions[i].substring(1, conjunctions[i].length() - 1).split("∨");
+                    variables = conjunctions[i].substring(1, conjunctions[i].length() - 1).split("\\+");
                     resultOfPart = 0;
                     for (int j = 0; j < variables.length; j++) {
                         switch (variables[j].charAt(0)) {
@@ -231,10 +231,10 @@ public class CheckProcessorImpl implements PreCheckResultAwareCheckProcessor<Str
                 }
                 return result;
             case "DNF":
-                String[] disjunctions = expression.split("∨");
+                String[] disjunctions = expression.split("\\+");
                 result = 0;
                 for (int i = 0; i < disjunctions.length; i++) {
-                    variables = disjunctions[i].split("∧");
+                    variables = disjunctions[i].split("\\*");
                     resultOfPart = 1;
                     for (int j = 0; j < variables.length; j++) {
                         switch (variables[j].charAt(0)) {
